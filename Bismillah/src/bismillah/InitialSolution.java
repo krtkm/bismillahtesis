@@ -39,14 +39,14 @@ public class InitialSolution {
     }
     
     //Assign jadwal initial solution ke timeslot dan room yang sesuai
-    void exploreSlot(int[][] conflictcourse, int timeslot, int[][] timeslotrooms, 
-            int[][] suitablerooms, int[][] suitableslot, int[][] suitableorder) {
+    void exploreSlot(int[][] conflictcourse, int timeslot, int[][] timeslotrooms, int[][] suitablerooms, 
+            int[][] suitableslot, int[][] suitableorder, int[][] beforeslot, int[][] afterslot) {
         for (int i = 0; i < conflictcourse.length; i++) {
             int index = course.get(i).getIndex();
 //            System.out.println("index ke " + index);
             outerloop: 
             for (int j = 0; j < timeslot; j++) { //yang di loop harusnya timeslotnya yang bisa berubah
-                if (searchTS(index, j+1, conflictcourse, suitableslot)) { //kalau searchTS benar maka
+                if (searchTS(index, j+1, conflictcourse, suitableslot, beforeslot, afterslot)) { //kalau searchTS benar maka
                     for (int k = 0; k < timeslotrooms[j].length; k++) {
                         int tr = timeslotrooms[j][k];
                         int sr = suitablerooms[index][k];
@@ -68,11 +68,11 @@ public class InitialSolution {
     
     //if eksplore untuk menghindarkan bentrok
     boolean searchTS(int index, int currentSlot, int[][] conflictcourse, 
-            int[][] suitableslot) {
+            int[][] suitableslot, int[][] beforeslot, int[][] afterslot) {
         for (int i = 0; i < conflictcourse[index].length; i++) {
             int numCourse = conflictcourse[index][i];
             int slotAccept = suitableslot[index][currentSlot-1];
-//            System.out.println("index ke "+index);
+//            System.out.println("index ke "+ index);
 //            System.out.println("numcoursenya adalah "+numCourse);
 //            System.out.println("currentslot ke "+currentslot);
 //            System.out.println("courseTimeslot "+courseTimeslot[numCourse]);
@@ -89,6 +89,14 @@ public class InitialSolution {
 //                    else return true;
                 }
         }
+        for (int j = 0; j< beforeslot[index].length; j++) {
+            int beforeOrder = beforeslot[index][j];
+            System.out.println("index ke "+ index+", sebelum "+beforeOrder);
+        }
+        for (int j = 0; j< afterslot[index].length; j++) {
+            int afterOrder = afterslot[index][j];
+            System.out.println("index ke "+ index+", setelah "+afterOrder);
+        }
         return true;
     }
     
@@ -100,7 +108,10 @@ public class InitialSolution {
                 //suitableorder
 //                System.out.println("timeslot ke-" + courseTimeslot[i]);
                 if (suitableorder[index][i]!=0 ){
-                    if (currentTimeslot<cekSlot && suitableorder[index][i]!=1){
+                    System.out.println("event a "+ index+", event b "+i+", current slot " + currentTimeslot +
+                            ", slot event b "+cekSlot+ 
+                            ", suitable ordernya "+suitableorder[index][i]);
+                    if (currentTimeslot<cekSlot && suitableorder[index][i]<0){
                         return false;
                     }
                     else if (currentTimeslot>cekSlot && suitableorder[index][i]==1){

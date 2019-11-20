@@ -22,8 +22,8 @@ public final class ReadFile {
     String[] firstLineArray;
     int[] roomCapacityArray, sizeStudentEvent, countSuitableRoom, countEventFeature;
     int[][] mStudentEvent, mRoomFeatures, mEventFeatures, mSuitableRoom, 
-            conflictMatrix, conflictCourse, timeslotRoom, eventSlot, eventOrder,
-            SuitableSlot, SuitableOrder;
+            conflictMatrix, conflictCourse, timeslotRoom, 
+            eventSlot, eventOrder, SuitableSlot, SuitableOrder, beforeSlot, afterSlot;
     ArrayList<List<Integer>> CMStudentEvent;
     
     ReadFile(String filename) throws FileNotFoundException, IOException {
@@ -93,8 +93,8 @@ public final class ReadFile {
         }
 
         suitableRoom();
-//        suitableSlot(); /*ITC-2007*/
-//        suitableOrder(); /*ITC-2007*/
+        suitableSlot(); /*ITC-2007*/
+        suitableOrder(); /*ITC-2007*/
         countSuitableRoom();
         countEventFeatures();
         CMStudentEvent();
@@ -189,7 +189,7 @@ public final class ReadFile {
                 for (int k = j+1; k < CMStudentEvent.get(i).size(); k++) {
                     int eventi = CMStudentEvent.get(i).get(j);
                     int eventj = CMStudentEvent.get(i).get(k);
-                    System.out.println(eventi+", "+eventj);
+//                    System.out.println(eventi+", "+eventj);
                     conflictMatrix[eventi][eventj]++;
                     conflictMatrix[eventj][eventi]++;
 //                    System.out.println("student ke "+ i +" conflict matrix " 
@@ -239,5 +239,52 @@ public final class ReadFile {
             }
         }
         return timeslotRoom;
+    }
+    
+    int [][]beforeSlot(){
+        beforeSlot = new int[event][];
+        for (int i = 0; i < event; i++) {
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+            for (int j = 0; j < SuitableOrder[i].length; j++){
+                int conflict = SuitableOrder[i][j];
+//                System.out.println("int conflict " + conflict);
+//                System.out.println("i "+i+"j " + j); //j adalah event ke-
+                if (conflict > 0 && i != j) {
+                    temp.add(j);
+//                    System.out.println("temp " + temp);
+                }
+            }
+            int[] arrayTemp = new int[temp.size()];
+            for (int j = 0; j < temp.size(); j++) {
+                arrayTemp[j] = temp.get(j);
+                System.out.println("arrayTemp "+arrayTemp[j]);
+            }
+            beforeSlot[i] = arrayTemp;
+        }
+        return beforeSlot;
+    }
+    
+    int [][]afterSlot(){
+        afterSlot = new int[event][];
+        for (int i = 0; i < event; i++) {
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+            for (int j = 0; j < SuitableOrder[i].length; j++){
+                int conflict = SuitableOrder[i][j];
+//                System.out.println("int conflict " + conflict);
+//                System.out.println("i "+i+"j " + j); //j adalah event ke-
+                if (conflict < 0 && i != j) {
+                    temp.add(j);
+//                    System.out.println("temp " + temp);
+                }
+            }
+            int[] arrayTemp = new int[temp.size()];
+            for (int j = 0; j < temp.size(); j++) {
+                arrayTemp[j] = temp.get(j);
+                System.out.println("arrayTemp "+arrayTemp[j]);
+            }
+            afterSlot[i] = arrayTemp;
+        }
+        
+        return afterSlot;
     }
 }

@@ -19,7 +19,7 @@ public class Run {
             "hidden18.tim", "hidden19.tim", "hidden20.tim", "hidden21.tim", "hidden22.tim",
             "hidden23.tim", "hidden24.tim"};
 //        String sourceFile = fileName[(Integer.parseInt(args[0]))-1];
-        int instance = 17;
+        int instance = 2;
         String sourceFile = fileName[instance-1];
 //        String sourceFile = "small1.tim";
 //        for (int i = 1; i < 12; i++) {
@@ -44,7 +44,8 @@ public class Run {
 //        int iteration = Integer.parseInt(args[1]);
         
         InitialSolution initialSolution;
-        int[][] conflictMatrix, conflictCourse, timeslotRoom, suitableRoom, suitableSlot, suitableOrder, mStudentEvent;
+        int[][] conflictMatrix, conflictCourse, timeslotRoom, suitableRoom, suitableSlot, mStudentEvent,
+                suitableOrder, beforeSlot, afterSlot;
         int[] sizeStudentEvent, countSuitableRoom,countEventFeature;
         int noTS, timeslot, timeLimit = 0, iteration = 0;
         boolean hardConstraint;
@@ -73,13 +74,16 @@ public class Run {
             suitableRoom = readFile.mSuitableRoom;
             suitableSlot = readFile.suitableSlot();
             suitableOrder = readFile.suitableOrder();
+            beforeSlot = readFile.beforeSlot();
+            afterSlot = readFile.afterSlot();
             mStudentEvent = readFile.mStudentEvent;
             sizeStudentEvent = readFile.sizeStudentEvent;
             countSuitableRoom = readFile.countSuitableRoom;
             countEventFeature = readFile.countEventFeature;
             timeslot = readFile.timeslot;
             initialSolution = new InitialSolution(conflictCourse, sizeStudentEvent, countSuitableRoom, countEventFeature);
-            initialSolution.exploreSlot(conflictCourse, timeslot, timeslotRoom, suitableRoom, suitableSlot, suitableOrder);
+            initialSolution.exploreSlot(conflictCourse, timeslot, timeslotRoom, 
+                    suitableRoom, suitableSlot, suitableOrder, beforeSlot, afterSlot);
 
             initialSolution.noTimeslot();
             noTS = initialSolution.noTimeslot.size();
