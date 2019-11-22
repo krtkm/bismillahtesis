@@ -194,9 +194,12 @@ public final class ReadFile {
                     conflictMatrix[eventj][eventi]++;
 //                    System.out.println("student ke "+ i +" conflict matrix " 
 //                            + (conflictMatrix[eventi][eventj])+ " , " + (conflictMatrix[eventj][eventi]));
+//                    System.out.println("eventi ="+eventi+", eventj="+eventj);
                     
                 }
+//                System.out.println("CM "+Arrays.toString(conflictMatrix[i]));
             }
+            
         }
         return conflictMatrix;
     }
@@ -222,11 +225,6 @@ public final class ReadFile {
             }
             conflictCourse[i] = arrayTemp;
 //            System.out.println("cc "+Arrays.toString(conflictCourse[i]));
-//            for (int k = 0; k < event; k++) {
-//                for (int l = 0; l < conflictCourse[k].length; l++) {
-//			System.out.println("conflictCourse yaitu "+conflictCourse[k][l]);
-//		}
-//            }
         }
         return conflictCourse;
     }
@@ -248,16 +246,17 @@ public final class ReadFile {
             for (int j = 0; j < SuitableOrder[i].length; j++){
                 int conflict = SuitableOrder[i][j];
 //                System.out.println("int conflict " + conflict);
-//                System.out.println("i "+i+"j " + j); //j adalah event ke-
+                
                 if (conflict > 0 && i != j) {
                     temp.add(j);
 //                    System.out.println("temp " + temp);
+//                    System.out.println("i "+i+"j " + j); //j adalah event ke-
                 }
             }
             int[] arrayTemp = new int[temp.size()];
             for (int j = 0; j < temp.size(); j++) {
                 arrayTemp[j] = temp.get(j);
-                System.out.println("arrayTemp "+arrayTemp[j]);
+//                System.out.println("arrayTemp "+arrayTemp[j]);
             }
             beforeSlot[i] = arrayTemp;
         }
@@ -280,7 +279,7 @@ public final class ReadFile {
             int[] arrayTemp = new int[temp.size()];
             for (int j = 0; j < temp.size(); j++) {
                 arrayTemp[j] = temp.get(j);
-                System.out.println("arrayTemp "+arrayTemp[j]);
+//                System.out.println("arrayTemp "+arrayTemp[j]);
             }
             afterSlot[i] = arrayTemp;
         }

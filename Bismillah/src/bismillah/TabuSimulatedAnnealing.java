@@ -23,7 +23,8 @@ public class TabuSimulatedAnnealing {
     WriteSol writeSol;
     ReadSol readSol = new ReadSol();
     
-    TabuSimulatedAnnealing(String sourceFile, int[][]mStudentEvent, int[][] suitableRoom, /*int[][] suitableSlot,*/
+    TabuSimulatedAnnealing(String sourceFile, int[][]mStudentEvent, int[][] suitableRoom, 
+            int[][] suitableSlot, int[][] suitableOrder,
             int timeslot, double T, double Tstop, double alpa, int tabulistLength, long startTime, int timelimit,
             int[] initialTS, int[] initialRoom, String exp, /*int tabuLLH,*/ int Tchange, 
             int Nreheating, double beta) throws IOException {
@@ -39,7 +40,9 @@ public class TabuSimulatedAnnealing {
             LHscore[i] = 50;
         }
         
-        readInitialSol(mStudentEvent, suitableRoom, /*suitableSlot,*/ timeslot, initialTS, initialRoom);
+        readInitialSol(mStudentEvent, suitableRoom, 
+                suitableSlot, suitableOrder,
+                timeslot, initialTS, initialRoom);
         high = currentTimeslot.length;
         
         
@@ -94,7 +97,9 @@ public class TabuSimulatedAnnealing {
 //            }
             newRoom = currentRoom.clone();
             int[][] schStudent = readSol.studentAvail(mStudentEvent, timeslot, newTimeslot);
-            hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, /*suitableSlot,*/ newRoom, newTimeslot);
+            hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, 
+                    suitableSlot, suitableOrder, 
+                    newRoom, newTimeslot);
             if (hardConstraint) {
                 newPenalty = checkPenalti.totalPenalti(schStudent);
             } else {
@@ -265,12 +270,16 @@ public class TabuSimulatedAnnealing {
         return newTS;
     }
     
-    void readInitialSol(int[][] mStudentEvent, int[][] suitableRoom, int timeslot, int[] initialTS, int[] initialRooms) {
+    void readInitialSol(int[][] mStudentEvent, int[][] suitableRoom, 
+            int[][] suitableSlot, int[][] suitableOrder,
+            int timeslot, int[] initialTS, int[] initialRooms) {
         currentTimeslot = initialTS.clone();
         currentRoom = initialRooms.clone();
         schStudent = readSol.studentAvail(mStudentEvent, timeslot, currentTimeslot);
         
-        hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, /*suitableSlot,*/ currentRoom, currentTimeslot);
+        hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, 
+                suitableSlot, suitableOrder,
+                currentRoom, currentTimeslot);
         if (hardConstraint) {
             currentPenalty = checkPenalti.totalPenalti(schStudent);
         } else {

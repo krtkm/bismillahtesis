@@ -19,7 +19,7 @@ public class Run {
             "hidden18.tim", "hidden19.tim", "hidden20.tim", "hidden21.tim", "hidden22.tim",
             "hidden23.tim", "hidden24.tim"};
 //        String sourceFile = fileName[(Integer.parseInt(args[0]))-1];
-        int instance = 2;
+        int instance = 17;
         String sourceFile = fileName[instance-1];
 //        String sourceFile = "small1.tim";
 //        for (int i = 1; i < 12; i++) {
@@ -67,34 +67,37 @@ public class Run {
         System.out.println("Source File : " + sourceFile);
         long startTime = System.currentTimeMillis();
         ReadFile readFile = new ReadFile(sourceFile);
+        conflictMatrix = readFile.conflictMatrix();
+        conflictCourse = readFile.conflictCourse();
+        timeslotRoom = readFile.timeslotRoom();
+        suitableRoom = readFile.mSuitableRoom;
+        suitableSlot = readFile.suitableSlot();
+        suitableOrder = readFile.suitableOrder();
+        beforeSlot = readFile.beforeSlot();
+        afterSlot = readFile.afterSlot();
+        mStudentEvent = readFile.mStudentEvent;
+        sizeStudentEvent = readFile.sizeStudentEvent;
+        countSuitableRoom = readFile.countSuitableRoom;
+        countEventFeature = readFile.countEventFeature;
+        timeslot = readFile.timeslot;
         do {
-            conflictMatrix = readFile.conflictMatrix();
-            conflictCourse = readFile.conflictCourse();
-            timeslotRoom = readFile.timeslotRoom();
-            suitableRoom = readFile.mSuitableRoom;
-            suitableSlot = readFile.suitableSlot();
-            suitableOrder = readFile.suitableOrder();
-            beforeSlot = readFile.beforeSlot();
-            afterSlot = readFile.afterSlot();
-            mStudentEvent = readFile.mStudentEvent;
-            sizeStudentEvent = readFile.sizeStudentEvent;
-            countSuitableRoom = readFile.countSuitableRoom;
-            countEventFeature = readFile.countEventFeature;
-            timeslot = readFile.timeslot;
-            initialSolution = new InitialSolution(conflictCourse, sizeStudentEvent, countSuitableRoom, countEventFeature);
-            initialSolution.exploreSlot(conflictCourse, timeslot, timeslotRoom, 
+            initialSolution = new InitialSolution(conflictCourse, sizeStudentEvent, countSuitableRoom, countEventFeature
+            , afterSlot, timeslot);
+            initialSolution.exploreSlot(conflictCourse, sizeStudentEvent, countSuitableRoom, 
+                    countEventFeature, timeslot, timeslotRoom, 
                     suitableRoom, suitableSlot, suitableOrder, beforeSlot, afterSlot);
 
             initialSolution.noTimeslot();
             noTS = initialSolution.noTimeslot.size();
-        } while(noTS != 0);
+        } while(noTS!=0);
         
         int[] courseTimeslot = initialSolution.courseTimeslot;
         int[] courseRoom = initialSolution.courseRoom;
         
         TabuSimulatedAnnealing tsa = new TabuSimulatedAnnealing(sourceFile, 
-                mStudentEvent, suitableRoom, /*suitableSlot,*/ timeslot,
-                T, Tstop, alpa, tabulistLength, startTime, timeLimit, 
+                mStudentEvent, suitableRoom, 
+                suitableSlot, suitableOrder,
+                timeslot, T, Tstop, alpa, tabulistLength, startTime, timeLimit, 
                 courseTimeslot, courseRoom, exp, /*tabuLLH,*/ Tchange, Nreheating, beta);
         
 ////        SelfAdaptiveSimulatedAnnealing sasa = new SelfAdaptiveSimulatedAnnealing(sourceFile, 
@@ -109,7 +112,9 @@ public class Run {
         int[] currentT = readSol.solTimeslot;
         int[] currentR = readSol.solRoom;
         int[][] schStudent = readSol.studentAvail(mStudentEvent, timeslot, currentT);
-        hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, /*suitableSlot,*/ currentR, currentT);
+        hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, 
+                suitableSlot, suitableOrder,
+                currentR, currentT);
         if (hardConstraint) {
             System.out.println("Solusi Akhir : " + checkPenalti.totalPenalti(schStudent));
         }

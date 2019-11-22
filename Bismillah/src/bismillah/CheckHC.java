@@ -6,11 +6,12 @@ package bismillah;
  */
 public class CheckHC {
     
-    boolean hardConstraint(int[][] schStudent, int[][] suitableroom, /*int[][] suitableSlot, int[][] suitableOrder,*/ 
+    boolean hardConstraint(int[][] schStudent, int[][] suitableroom, int[][] suitableSlot, int[][] suitableOrder, 
             int[] solRoom, int[] solTimeslot) 
     {
-        if (HC1(schStudent) && HC2(suitableroom, solRoom) && HC3(solTimeslot, solRoom) 
-//                && HC4(solTimeslot, suitableSlot) && HC5(solTimeslot, suitableOrder)
+        if (HC1(schStudent) || HC2(suitableroom, solRoom) || HC3(solTimeslot, solRoom) 
+                || HC4(solTimeslot, suitableSlot) 
+                || HC5(solTimeslot, suitableOrder)
                 ) {
             return true;
         }
@@ -25,6 +26,7 @@ public class CheckHC {
         for (int j = 0; j < schStudent.length; j++) {
             for (int k = 0; k < schStudent[j].length; k++) {
                 if (schStudent[j][k] > 1) {
+//                    System.out.println("TIDAK lolos HC 1");
                     return false;
                 }
             }
@@ -42,6 +44,7 @@ public class CheckHC {
         for (int i = 0; i < suitableroom.length; i++) {
             int rooms = solRoom[i];
             if (suitableroom[i][rooms-1] < 1) {
+//                System.out.println("TIDAK lolos HC 2");
                 return false;
             }
         }
@@ -59,6 +62,7 @@ public class CheckHC {
             int room = solRoom[i];
             for (int j = i+1; j < solTimeslot.length; j++) {
                 if (solTimeslot[j]==slot && solRoom[j]==room) {
+//                    System.out.println("TIDAK lolos HC 3");
                     return false;
                 }
             }
@@ -91,7 +95,7 @@ public class CheckHC {
             int eventA=solTimeSlot[i];
             for (int j = i+1; j < solTimeSlot.length; j++) {
                 int eventB = solTimeSlot[j];
-                if (eventA > eventB && suitableOrder[i][j]>0) {
+                if (eventA > eventB && suitableOrder[i][j]<0) {
                     return false;
                 } // ITC-2007 jika matrix urutan order 
                 if (eventA < eventB && suitableOrder[i][j]>0) {

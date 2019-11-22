@@ -29,6 +29,7 @@ public class CheckPenalti {
                 }
                 if (numCourse >= 3) {
                     score++;
+//                    System.out.println("score SC 1 ++");
                 }
             }
         }
@@ -56,11 +57,27 @@ public class CheckPenalti {
                     if (studentavailability[i][j] == 1) numCourse[4]++;
                 }
             }
-            if (numCourse[0] == 1) score++;
-            if (numCourse[1] == 1) score++;
-            if (numCourse[2] == 1) score++;
-            if (numCourse[3] == 1) score++;
-            if (numCourse[4] == 1) score++;
+            if (numCourse[0] == 1) {
+                score++;
+//                System.out.println("score SC 2 ++, numcourse 0");
+            }
+            if (numCourse[1] == 1) {
+                score++;
+//                System.out.println("score SC 2 ++, , numcourse 1");
+            }
+            if (numCourse[2] == 1) {
+                score++;
+//                System.out.println("score SC 2 ++, , numcourse 2");
+            }
+            if (numCourse[3] == 1) {
+                score++;
+//                System.out.println("score SC 2 ++, , numcourse 3");
+            }
+            if (numCourse[4] == 1) {
+                score++;
+//                System.out.println("score SC 2 ++, , numcourse 4");
+            }
+//            System.out.println("score SC 2 :"+score);
         }
         return score;
     }

@@ -16,14 +16,16 @@ public class Course {
     private int noRooms;
     private int noFeatures;
     private int randomRank;
+    private int timeslotAvail;
     
-    public Course(int index, int noConflict, int noStudent, int noRooms, int noFeatures, int randomRank) {
+    public Course(int index, int noConflict, int noStudent, int noRooms, int noFeatures, int timeslotAvail, int randomRank) {
         this.index = index;
         this.noConflict = noConflict;
         this.noStudent = noStudent;
         this.noRooms = noRooms;
         this.noFeatures = noFeatures;
         this.randomRank = randomRank;
+        this.timeslotAvail=timeslotAvail;
     }
     
     /**
@@ -95,6 +97,14 @@ public class Course {
     public void setNoFeatures(int noFeatures) {
         this.noFeatures = noFeatures;
     }
+    
+    public int getTimeslotAvail(){
+        return timeslotAvail;
+    }
+    
+    public void setTimeslotAvail(int timeslotAvail){
+        this.timeslotAvail=timeslotAvail;
+    }
 
     /**
      * @return the randomRank
@@ -164,5 +174,12 @@ class courseSortingStudent implements Comparator<Course>{
     @Override
     public int compare(Course o1, Course o2) {
         return o2.getNoStudent()- o1.getNoStudent();
+    }
+}
+
+class courseSortingTimeslot implements Comparator<Course>{
+    @Override
+    public int compare(Course o1, Course o2) {
+        return o1.getTimeslotAvail()- o2.getTimeslotAvail();
     }   
 }
