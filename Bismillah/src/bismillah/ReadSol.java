@@ -46,8 +46,10 @@ public class ReadSol {
         for (int i = 0; i < studentevent.length; i++) {
             for (int j = 0; j < studentevent[i].length; j++) {
                 int slot = solTimeslot[j];
-                if (studentevent[i][j] > 0) {
-                    studentAvailability[i][slot-1]++;
+                if (slot!=0){
+                    if (studentevent[i][j] > 0) {
+                        studentAvailability[i][slot-1]++;
+                    }
                 }
             }
         }

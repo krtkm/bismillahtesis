@@ -13,13 +13,13 @@ public class Run {
         
 //        String[] fileName = {"small1.tim", "small2.tim", "small3.tim", "small4.tim", "small5.tim", 
 //            "medium1.tim", "medium2.tim", "medium3.tim", "medium4.tim", "medium5.tim", "large.tim"};
-        String[] fileName = {"tes.tim", "early2.tim", "early3.tim", "early4.tim", "early5.tim",
+        String[] fileName = {"early1.tim", "early2.tim", "early3.tim", "early4.tim", "early5.tim",
             "early6.tim", "early7.tim", "early8.tim", "late9.tim", "late10.tim", "late11.tim",
             "late12.tim", "late13.tim", "late14.tim", "late15.tim", "late16.tim", "hidden17.tim",
             "hidden18.tim", "hidden19.tim", "hidden20.tim", "hidden21.tim", "hidden22.tim",
             "hidden23.tim", "hidden24.tim"};
 //        String sourceFile = fileName[(Integer.parseInt(args[0]))-1];
-        int instance = 17;
+        int instance = 24;
         String sourceFile = fileName[instance-1];
 //        String sourceFile = "small1.tim";
 //        for (int i = 1; i < 12; i++) {
@@ -47,7 +47,7 @@ public class Run {
         int[][] conflictMatrix, conflictCourse, timeslotRoom, suitableRoom, suitableSlot, mStudentEvent,
                 suitableOrder, beforeSlot, afterSlot;
         int[] sizeStudentEvent, countSuitableRoom,countEventFeature;
-        int noTS, timeslot, timeLimit = 0, iteration = 0;
+        int noTS, timeslot, timeLimit = 0, iteration = 0, distFeasibility;
         boolean hardConstraint;
         
         //timelimit
@@ -87,8 +87,9 @@ public class Run {
                     countEventFeature, timeslot, timeslotRoom, 
                     suitableRoom, suitableSlot, suitableOrder, beforeSlot, afterSlot);
 
-            initialSolution.noTimeslot();
+            initialSolution.noTimeslot(sizeStudentEvent);
             noTS = initialSolution.noTimeslot.size();
+            distFeasibility = initialSolution.distFeasibility;
         } while(noTS!=0);
         
         int[] courseTimeslot = initialSolution.courseTimeslot;

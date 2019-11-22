@@ -43,9 +43,11 @@ public class CheckHC {
     boolean HC2(int[][] suitableroom, int[] solRoom) {
         for (int i = 0; i < suitableroom.length; i++) {
             int rooms = solRoom[i];
-            if (suitableroom[i][rooms-1] < 1) {
+            if (rooms>0){
+                if (suitableroom[i][rooms-1] < 1) {
 //                System.out.println("TIDAK lolos HC 2");
                 return false;
+                }
             }
         }
        return true;

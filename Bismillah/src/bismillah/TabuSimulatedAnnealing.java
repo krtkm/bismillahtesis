@@ -285,7 +285,7 @@ public class TabuSimulatedAnnealing {
         } else {
             currentPenalty = M;
         }
-        System.out.println("Initial Solution : " + currentPenalty);
+        System.out.println(/*"Initial Solution : " + */currentPenalty);
     }
     
     double[] rouletteWheele(int[] LHscore) {

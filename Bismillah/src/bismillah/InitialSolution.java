@@ -15,7 +15,7 @@ public class InitialSolution {
     ArrayList<Integer> noTimeslot, reqEvent;
     ArrayList<List<Integer>> conflictTimeslot;
     int[] courseRoom, courseTimeslot, cekAfterSlot;
-    int lengthSlot;
+    int lengthSlot, distFeasibility;;
     
     InitialSolution(int[][] conflictcourse, int[] sizeeventstudent, 
             int[] countsuitableroom, int[]counteventfeatures, int[][] afterslot,
@@ -225,27 +225,29 @@ public class InitialSolution {
     }
     
     //Cek semua event telah terjadwal
-    void noTimeslot() {
+    void noTimeslot(int[] sizeeventstudent) {
         noTimeslot = new ArrayList<>();
         for (int i = 0; i < courseTimeslot.length; i++) {
             if (courseTimeslot[i] < 1 || courseRoom[i] < 1) {
-                System.out.println("course ini "+i);
+//                System.out.println("course ini "+i);
                 noTimeslot.add(i);
             }
         }
+        distFeasibility(sizeeventstudent);
+        System.out.println(distFeasibility);
     }
     
     //Distance to feasibility. cek event yang tidak ditempatkan dan berapa siswanya
-    void distFeasibility(int sizeStuEv){
+    int distFeasibility(int[] sizeStuEv){
+        distFeasibility = 0;
         noTimeslot = new ArrayList<>();
         for (int i = 0; i < courseTimeslot.length; i++) {
             if (courseTimeslot[i] < 1 || courseRoom[i] < 1) {
-                System.out.println("course ini "+i);
                 noTimeslot.add(i);
-                for (int j = 0; j < noTimeslot.size(); j++) {
-                    
-                }
+                distFeasibility= distFeasibility + sizeStuEv[i];
             }
         }
+        return distFeasibility;
     }
+    
 }
