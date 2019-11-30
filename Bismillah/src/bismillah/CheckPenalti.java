@@ -27,9 +27,15 @@ public class CheckPenalti {
                 } else {
                     numCourse = 0;
                 }
-                if (numCourse >= 3) {
+                if (numCourse == 3) {
                     score++;
 //                    System.out.println("score SC 1 ++");
+                }
+                if (numCourse == 4) {
+                    score=score+2;
+                }
+                if (numCourse == 5) {
+                    score=score+3;
                 }
             }
         }

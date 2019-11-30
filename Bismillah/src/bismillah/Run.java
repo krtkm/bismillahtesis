@@ -46,8 +46,8 @@ public class Run {
         InitialSolution initialSolution;
         int[][] conflictMatrix, conflictCourse, timeslotRoom, suitableRoom, suitableSlot, mStudentEvent,
                 suitableOrder, beforeSlot, afterSlot;
-        int[] sizeStudentEvent, countSuitableRoom,countEventFeature;
-        int noTS, timeslot, timeLimit = 0, iteration = 0, distFeasibility;
+        int[] sizeStudentEvent, countSuitableRoom, countEventFeature, countOrderSlot;
+        int noTS, timeslot, timeLimit = 0, iteration = 0, distFeasibility, precedenceViolation;
         boolean hardConstraint;
         
         //timelimit
@@ -63,26 +63,27 @@ public class Run {
 //            timeLimit = 9000000;
 ////            iteration = 20000000;
 //        }
-        
         System.out.println("Source File : " + sourceFile);
         long startTime = System.currentTimeMillis();
         ReadFile readFile = new ReadFile(sourceFile);
-        conflictMatrix = readFile.conflictMatrix();
-        conflictCourse = readFile.conflictCourse();
-        timeslotRoom = readFile.timeslotRoom();
-        suitableRoom = readFile.mSuitableRoom;
-        suitableSlot = readFile.suitableSlot();
-        suitableOrder = readFile.suitableOrder();
-        beforeSlot = readFile.beforeSlot();
-        afterSlot = readFile.afterSlot();
-        mStudentEvent = readFile.mStudentEvent;
-        sizeStudentEvent = readFile.sizeStudentEvent;
-        countSuitableRoom = readFile.countSuitableRoom;
-        countEventFeature = readFile.countEventFeature;
-        timeslot = readFile.timeslot;
         do {
+            
+            conflictMatrix = readFile.conflictMatrix();
+            conflictCourse = readFile.conflictCourse();
+            timeslotRoom = readFile.timeslotRoom();
+            suitableRoom = readFile.mSuitableRoom;
+            suitableSlot = readFile.suitableSlot();
+            suitableOrder = readFile.suitableOrder();
+            beforeSlot = readFile.beforeSlot();
+            afterSlot = readFile.afterSlot();
+            countOrderSlot = readFile.countOrderSlot();
+            mStudentEvent = readFile.mStudentEvent;
+            sizeStudentEvent = readFile.sizeStudentEvent;
+            countSuitableRoom = readFile.countSuitableRoom;
+            countEventFeature = readFile.countEventFeature;
+            timeslot = readFile.timeslot;
             initialSolution = new InitialSolution(conflictCourse, sizeStudentEvent, countSuitableRoom, countEventFeature
-            , afterSlot, timeslot);
+            , afterSlot, timeslot, countOrderSlot);
             initialSolution.exploreSlot(conflictCourse, sizeStudentEvent, countSuitableRoom, 
                     countEventFeature, timeslot, timeslotRoom, 
                     suitableRoom, suitableSlot, suitableOrder, beforeSlot, afterSlot);
@@ -90,7 +91,9 @@ public class Run {
             initialSolution.noTimeslot(sizeStudentEvent);
             noTS = initialSolution.noTimeslot.size();
             distFeasibility = initialSolution.distFeasibility;
-        } while(noTS!=0);
+            initialSolution.precedenceViolation(suitableOrder);
+            precedenceViolation = initialSolution.precedenceViolation;
+        } while(precedenceViolation!=0);
         
         int[] courseTimeslot = initialSolution.courseTimeslot;
         int[] courseRoom = initialSolution.courseRoom;

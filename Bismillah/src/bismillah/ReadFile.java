@@ -20,7 +20,7 @@ public final class ReadFile {
     int event, room, feature, student, totalcapacity;
     int timeslot = 45;
     String[] firstLineArray;
-    int[] roomCapacityArray, sizeStudentEvent, countSuitableRoom, countEventFeature;
+    int[] roomCapacityArray, sizeStudentEvent, countSuitableRoom, countEventFeature, countOrderSlot;
     int[][] mStudentEvent, mRoomFeatures, mEventFeatures, mSuitableRoom, 
             conflictMatrix, conflictCourse, timeslotRoom, 
             eventSlot, eventOrder, SuitableSlot, SuitableOrder, beforeSlot, afterSlot;
@@ -127,6 +127,7 @@ public final class ReadFile {
         for (int i = 0; i < event; i++) {
             for (int j = 0; j < timeslot; j++) {
                 SuitableSlot[i][j]=eventSlot[i][j];
+//                System.out.println("Event ke "+i+", timeslot ke-"+j+" : "+eventSlot[i][j]);
             }
         }
         return SuitableSlot;
@@ -137,6 +138,7 @@ public final class ReadFile {
         for (int i = 0; i < event; i++) {
             for (int j = 0; j < event; j++) {
                 SuitableOrder[i][j]=eventOrder[i][j];
+//                System.out.println("Event ke "+i+", timeslot ke-"+j+" : "+eventOrder[i][j]);
             }
         }
         return SuitableOrder;
@@ -239,8 +241,32 @@ public final class ReadFile {
         return timeslotRoom;
     }
     
-    int [][]beforeSlot(){
+    int[][] beforeSlot(){
         beforeSlot = new int[event][];
+        for (int i = 0; i < event; i++) {
+            ArrayList<Integer> temp = new ArrayList<Integer>();
+            for (int j = 0; j < SuitableOrder[i].length; j++){
+                int conflict = SuitableOrder[i][j];
+//                System.out.println("int conflict " + conflict);
+//                System.out.println("i "+i+"j " + j); //j adalah event ke-
+                if (conflict < 0 && i != j) {
+                    temp.add(j);
+//                    System.out.println("temp " + temp);
+                }
+            }
+            int[] arrayTemp = new int[temp.size()];
+            for (int j = 0; j < temp.size(); j++) {
+                arrayTemp[j] = temp.get(j);
+//                System.out.println("arrayTemp "+arrayTemp[j]);
+            }
+            beforeSlot[i] = arrayTemp;
+        }
+        
+        return beforeSlot;
+    }
+    
+    int[][] afterSlot(){
+        afterSlot = new int[event][];
         for (int i = 0; i < event; i++) {
             ArrayList<Integer> temp = new ArrayList<Integer>();
             for (int j = 0; j < SuitableOrder[i].length; j++){
@@ -258,32 +284,23 @@ public final class ReadFile {
                 arrayTemp[j] = temp.get(j);
 //                System.out.println("arrayTemp "+arrayTemp[j]);
             }
-            beforeSlot[i] = arrayTemp;
-        }
-        return beforeSlot;
-    }
-    
-    int [][]afterSlot(){
-        afterSlot = new int[event][];
-        for (int i = 0; i < event; i++) {
-            ArrayList<Integer> temp = new ArrayList<Integer>();
-            for (int j = 0; j < SuitableOrder[i].length; j++){
-                int conflict = SuitableOrder[i][j];
-//                System.out.println("int conflict " + conflict);
-//                System.out.println("i "+i+"j " + j); //j adalah event ke-
-                if (conflict < 0 && i != j) {
-                    temp.add(j);
-//                    System.out.println("temp " + temp);
-                }
-            }
-            int[] arrayTemp = new int[temp.size()];
-            for (int j = 0; j < temp.size(); j++) {
-                arrayTemp[j] = temp.get(j);
-//                System.out.println("arrayTemp "+arrayTemp[j]);
-            }
             afterSlot[i] = arrayTemp;
         }
-        
         return afterSlot;
+    }
+    
+    int[] countOrderSlot(){
+        countOrderSlot = new int[event];
+        for (int i = 0; i < event; i++) {
+            int countOrder=0;
+            for (int j = 0; j < SuitableOrder[i].length; j++){
+                int conflict = SuitableOrder[i][j];
+                if (conflict != 0 && i != j) {
+                    countOrder++;
+                }
+            }
+            countOrderSlot[i]=countOrder;
+        }
+        return countOrderSlot;
     }
 }
