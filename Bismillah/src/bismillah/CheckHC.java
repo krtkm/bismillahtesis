@@ -27,7 +27,7 @@ public class CheckHC {
             for (int k = 0; k < schStudent[j].length; k++) {
                 if (schStudent[j][k] > 1) {
 //                    System.out.println("TIDAK lolos HC 1");
-//                    System.out.println("schedule student ke "+j+" dan ke "+k);
+                    System.out.println("schedule student ke "+j+" dan ke "+k);
                     return false;
                 }
             }
@@ -46,7 +46,7 @@ public class CheckHC {
             int rooms = solRoom[i];
             if (rooms>0){
                 if (suitableroom[i][rooms-1] < 1) {
-//                System.out.println("suitable rooms event "+i+" rooms ke " +(rooms-1));
+                System.out.println("suitable rooms event "+i+" rooms ke " +(rooms-1));
 //                System.out.println("TIDAK lolos HC 2");
                 return false;
                 }
@@ -67,7 +67,7 @@ public class CheckHC {
             if (slot>0 && room>0){
                 for (int j = i+1; j < solTimeslot.length; j++) {
                     if (solTimeslot[j]==slot && solRoom[j]==room) {
-//                        System.out.println("event" +i+ " dan event "+j+ " di "+room);
+                        System.out.println("event" +i+ " dan event "+j+ " di "+room);
 //                        System.out.println("TIDAK lolos HC 3");
                         return false;
                     }
@@ -87,7 +87,7 @@ public class CheckHC {
             if (solSlot>0){
                 if (suitableSlot[i][solSlot-1]==0) {
 //                    System.out.println("TIDAK lolos HC 4");
-//                    System.out.println(i+", "+(solSlot));
+                    System.out.println(i+", "+(solSlot));
                     return false;
                 }
             }

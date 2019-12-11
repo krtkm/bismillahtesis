@@ -1,10 +1,13 @@
 package bismillah;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author AM
  */
 public class CheckPenalti {
+    int distFeasibility;
     
     int totalPenalti(int[][] studentavailability){
         return (SC1(studentavailability)+SC2(studentavailability)+SC3(studentavailability));
@@ -104,5 +107,20 @@ public class CheckPenalti {
             }
         }
         return score;
+    }
+    
+    int distFeasibility(int[] courseTimeslot, int[] courseRoom, int[] sizeeventstudent, int[][] beforeslot, int[][] afterslot){
+        distFeasibility = 0;
+        ArrayList<Integer> noTimeslot = new ArrayList<>();
+        for (int i = 0; i < courseTimeslot.length; i++) {
+            if (courseTimeslot[i] < 1 || courseRoom[i] < 1) {
+                noTimeslot.add(i);
+                distFeasibility= distFeasibility + sizeeventstudent[i];
+                if (afterslot[i].length>0 && beforeslot[i].length>0){
+                    System.out.println("course "+i);
+                }
+            }
+        }
+        return distFeasibility;
     }
 }

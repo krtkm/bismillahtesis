@@ -5,11 +5,11 @@
         <group>
             <file>file:/C:/Users/tika/Documents/NetBeansProjects/ORI/Bismillah/src/bismillah/CheckPenalti.java</file>
             <file>file:/C:/Users/tika/Documents/NetBeansProjects/ORI/Bismillah/src/bismillah/TabuSimulatedAnnealing.java</file>
-            <file>file:/C:/Users/tika/Documents/NetBeansProjects/ORI/Bismillah/src/bismillah/Course.java</file>
             <file>file:/C:/Users/tika/Documents/NetBeansProjects/ORI/Bismillah/src/bismillah/InitialSolution.java</file>
             <file>file:/C:/Users/tika/Documents/NetBeansProjects/ORI/Bismillah/src/bismillah/CheckHC.java</file>
             <file>file:/C:/Users/tika/Documents/NetBeansProjects/ORI/Bismillah/src/bismillah/ReadFile.java</file>
             <file>file:/C:/Users/tika/Documents/NetBeansProjects/ORI/Bismillah/src/bismillah/Run.java</file>
+            <file>file:/C:/Users/tika/Documents/NetBeansProjects/ORI/Bismillah/src/bismillah/SelfAdaptiveSimulatedAnnealing.java</file>
         </group>
     </open-files>
 </project-private>

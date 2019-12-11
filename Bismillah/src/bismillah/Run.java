@@ -19,7 +19,7 @@ public class Run {
             "hidden18.tim", "hidden19.tim", "hidden20.tim", "hidden21.tim", "hidden22.tim",
             "hidden23.tim", "hidden24.tim"};
 //        String sourceFile = fileName[(Integer.parseInt(args[0]))-1];
-        int instance = 24;
+        int instance = 14;
         String sourceFile = fileName[instance-1];
 //        String sourceFile = "small1.tim";
 //        for (int i = 1; i < 12; i++) {
@@ -51,10 +51,10 @@ public class Run {
         boolean hardConstraint;
         
         //timelimit
-        if (instance-1 < 30) {
+//        if (instance-1 < 30) {
             timeLimit = 90000;
 //            iteration = 3000000;
-        } 
+//        } 
 //        else if (instance-1 < 10) {
 //            timeLimit = 900000;
 ////            iteration = 6000000;
@@ -83,12 +83,12 @@ public class Run {
             countEventFeature = readFile.countEventFeature;
             timeslot = readFile.timeslot;
             initialSolution = new InitialSolution(conflictCourse, sizeStudentEvent, countSuitableRoom, countEventFeature
-            , afterSlot, timeslot, countOrderSlot);
+            , timeslot, countOrderSlot);
             initialSolution.exploreSlot(conflictCourse, sizeStudentEvent, countSuitableRoom, 
                     countEventFeature, timeslot, timeslotRoom, 
                     suitableRoom, suitableSlot, suitableOrder, beforeSlot, afterSlot);
 
-            initialSolution.noTimeslot(sizeStudentEvent);
+            initialSolution.noTimeslot(sizeStudentEvent, afterSlot, beforeSlot);
             noTS = initialSolution.noTimeslot.size();
             distFeasibility = initialSolution.distFeasibility;
             initialSolution.precedenceViolation(suitableOrder);
@@ -98,16 +98,18 @@ public class Run {
         int[] courseTimeslot = initialSolution.courseTimeslot;
         int[] courseRoom = initialSolution.courseRoom;
         
-        TabuSimulatedAnnealing tsa = new TabuSimulatedAnnealing(sourceFile, 
-                mStudentEvent, suitableRoom, 
-                suitableSlot, suitableOrder,
-                timeslot, T, Tstop, alpa, tabulistLength, startTime, timeLimit, 
-                courseTimeslot, courseRoom, exp, /*tabuLLH,*/ Tchange, Nreheating, beta);
+//        TabuSimulatedAnnealing tsa = new TabuSimulatedAnnealing(sourceFile, 
+//                mStudentEvent, suitableRoom, 
+//                suitableSlot, suitableOrder,
+//                timeslot, T, Tstop, alpa, tabulistLength, startTime, timeLimit, 
+//                courseTimeslot, courseRoom, exp, /*tabuLLH,*/ Tchange, Nreheating, beta);
         
-////        SelfAdaptiveSimulatedAnnealing sasa = new SelfAdaptiveSimulatedAnnealing(sourceFile, 
-////                mStudentEvent, suitableRoom, timeslot, 
-////                T, Tstop, alpa, /*tabulistLength,*/ startTime, timeLimit, 
-////                courseTimeslot, courseRoom, exp, /*tabuLLH,*/ Tchange, Nreheating, beta);
+        SelfAdaptiveSimulatedAnnealing sasa = new SelfAdaptiveSimulatedAnnealing(sourceFile, 
+                mStudentEvent, suitableRoom, 
+                suitableSlot, suitableOrder, conflictCourse, beforeSlot, afterSlot,
+                timeslot, T, Tstop, alpa, /*tabulistLength,*/ startTime, timeLimit, 
+                courseTimeslot, courseRoom, exp, /*tabuLLH,*/ Tchange, Nreheating, beta,
+                sizeStudentEvent, countSuitableRoom, countEventFeature, countOrderSlot, timeslotRoom);
         
         //Verify Constraint
         CheckHC checkHC = new CheckHC();
@@ -120,7 +122,9 @@ public class Run {
                 suitableSlot, suitableOrder,
                 currentR, currentT);
         if (hardConstraint) {
-            System.out.println("Solusi Akhir : " + checkPenalti.totalPenalti(schStudent));
+            System.out.println(/*"Distance to Feasibility : " +*/ checkPenalti.distFeasibility(currentT, currentR, sizeStudentEvent, beforeSlot, afterSlot));
+            System.out.println(/*"Solusi Akhir : " +*/ checkPenalti.totalPenalti(schStudent));
+            
         }
         
         }

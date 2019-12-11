@@ -6,6 +6,7 @@
 package bismillah;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
@@ -15,12 +16,13 @@ import java.util.stream.*;
  * @author tika
  */
 public class SelfAdaptiveSimulatedAnnealing {
+    InitialSolution initialSolution;
     Random r = new Random();
     int high, currentPenalty, newPenalty, M, randomLH,
             randomEvent1, randomEvent2, randomEvent3, randomEvent4,
-            randomSlot1, randomSlot2, randomSlot3, cobahehe;
+            randomSlot1, randomSlot2, randomSlot3, newDistFeasibility;
     boolean hardConstraint;
-    double p, delta;
+    double p, delta, deltaDistFeasibility;
     int[] currentTimeslot, currentRoom, newTimeslot, newRoom, LHscore, NL;
     int[][] schStudent;
     CheckHC checkHC;
@@ -31,16 +33,19 @@ public class SelfAdaptiveSimulatedAnnealing {
     int minrand = 1; 
     int range = maxrand - minrand + 1;
     int totalNL = 8; //jumlah NL diganti di sini
+    int distFeasibility;
     
-    SelfAdaptiveSimulatedAnnealing(String sourceFile, int[][]mStudentEvent, int[][] suitableRoom, int timeslot, 
-            double T, double Tstop, double alpa, /*int tabulistLength,*/ long startTime, int timelimit,
+    SelfAdaptiveSimulatedAnnealing(String sourceFile, int[][]mStudentEvent, int[][] suitableRoom, 
+            int[][] suitableSlot, int[][] suitableOrder, int[][] conflictCourse, int[][] beforeSlot, int[][] afterSlot,
+            int timeslot, double T, double Tstop, double alpa, /*int tabulistLength,*/ long startTime, int timelimit,
             int[] initialTS, int[] initialRoom, String exp, /*int tabuLLH,*/ int Tchange, 
-            int Nreheating, double beta) throws IOException {
+            int Nreheating, double beta,
+            int[] sizeeventstudent, int[] countsuitableroom, int[] counteventfeatures, int[] countorderslot, int[][] timeslotrooms) 
+            throws IOException {
         M = 1000000;
-        LinkedList<int[]> tabu = new LinkedList<>();
-//        LinkedList<Integer> LLH = new LinkedList<>();
         checkHC = new CheckHC(); 
         checkPenalti = new CheckPenalti();
+        distFeasibility = checkPenalti.distFeasibility(initialTS, initialRoom, sizeeventstudent, beforeSlot, afterSlot);
         int n = 1;
         
         LHscore = new int[2];
@@ -55,15 +60,18 @@ public class SelfAdaptiveSimulatedAnnealing {
             int rand = (int)(Math.random() * range) + minrand; 
             // Output is different everytime this code is executed 
             NL[k]=rand;
-            System.out.println("isi array " + rand);
+//            System.out.println("isi array " + rand);
         }
         
         //WNL Self-Adaptive [BARU]
         LinkedList WNL = new LinkedList();
         
-        readInitialSol(mStudentEvent, suitableRoom, timeslot, initialTS, initialRoom);
+        readInitialSol(mStudentEvent, suitableRoom, 
+                suitableSlot, suitableOrder,
+                timeslot, initialTS, initialRoom);
         high = currentTimeslot.length;
         
+
         do {
             //menghilangkan nilai WNL
             WNL.clear();
@@ -78,48 +86,71 @@ public class SelfAdaptiveSimulatedAnnealing {
 //                case 6: newTimeslot = swap4Ts(currentTimeslot); break;
 //                default: newTimeslot = currentTimeslot.clone(); break;
                 }
-            
             newRoom = currentRoom.clone();
+            for (int j=0; j<conflictCourse.length; j++){
+                if (currentTimeslot[j]==0){
+                    System.out.println(j);
+                    firstSortOptimizationTS(j, 0, conflictCourse, timeslotrooms, suitableRoom,
+                                timeslot, suitableSlot, afterSlot, beforeSlot);
+                }
+            }
             int[][] schStudent = readSol.studentAvail(mStudentEvent, timeslot, newTimeslot);
-            hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, newRoom, newTimeslot);
+            hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, 
+                    suitableSlot, suitableOrder,
+                    newRoom, newTimeslot);
             if (hardConstraint) {
+//                for (int j=0; j<conflictCourse.length; j++){
+//                    if (currentTimeslot[j]==0 && beforeSlot[j].length==0 && afterSlot[j].length==0){
+//                        System.out.println(j);
+//                        firstSortOptimizationTS(j, 0, conflictCourse, timeslotrooms, suitableRoom,
+//                                    timeslot, suitableSlot, afterSlot, beforeSlot);
+//                    }
+//                }
                 newPenalty = checkPenalti.totalPenalti(schStudent);
+                newDistFeasibility = checkPenalti.distFeasibility(newTimeslot, newRoom, sizeeventstudent, beforeSlot, afterSlot);
+                System.out.println("newDistFeasibility " +newDistFeasibility);
             } else {
                 newPenalty = M;
             }
             delta = currentPenalty - newPenalty;
-//            System.out.println(newPenalty);
-//            
+            deltaDistFeasibility = distFeasibility - newDistFeasibility;
 //            System.out.println("Current Penalty Score: " + currentPenalty);
 //            System.out.println("New Penalty Score: " + newPenalty);
-            if (delta > 0 && newPenalty != M) {
+            if (delta > 0 && deltaDistFeasibility >= 0 && newPenalty != M) {
                 currentTimeslot = newTimeslot.clone();
                 currentRoom = newRoom.clone();
                 currentPenalty = newPenalty;
+                distFeasibility = newDistFeasibility;
                 System.out.println("Accept Solution");
                 //add to WNL
                 WNL.add(NL[k]);
-            } else {
-                p = Math.pow(Math.E, (-(Math.abs(delta)/T)));
-//                System.out.println("delta " +delta);
-//                System.out.println("T " +T);
-//                System.out.println("hitungan " +(-(Math.abs(delta)/T)));
-//                System.out.println("boltzman " +p);
-                double printR = r.nextDouble();
-//                System.out.println("R " +printR);
-                if (p > printR) {
-//                    currentTimeslot = newTimeslot.clone();
-                    currentRoom = newRoom.clone();
-                    currentPenalty = newPenalty;
-                    System.out.println("Accept Solution");
-                    //add to WNL
-                    WNL.add(NL[k]);
-                          
-                } 
-                else {
-                    System.out.println("Reject");
-                }
-                
+//                outerloop:
+//            } else if (deltaDistFeasibility >= 0){
+//                p = Math.pow(Math.E, (-(Math.abs(delta)/T)));
+////                System.out.println("delta " +delta);
+////                System.out.println("T " +T);
+////                System.out.println("hitungan " +(-(Math.abs(delta)/T)));
+////                System.out.println("boltzman " +p);
+////                System.out.println("R " +printR);
+//                if (p > r.nextDouble()) {
+////                    currentTimeslot = newTimeslot.clone();
+//                    currentRoom = newRoom.clone();
+//                    currentPenalty = newPenalty;
+////                    System.out.println("Accept Solution");
+//                    //add to WNL
+//                    WNL.add(NL[k]);
+//                                for (int j=0; j<conflictCourse.length; j++){
+//                if (initialTS[j]==0){
+//                    if (beforeSlot.length==0 && afterSlot.length==0){
+//                        System.out.println("nyobain");
+//                        initialSolution = new InitialSolution(conflictCourse, sizeeventstudent, countsuitableroom, counteventfeatures
+//            , timeslot, countorderslot);
+//                        initialSolution.firstSortInitialTS(j, timeslot, conflictCourse, suitableRoom, suitableRoom, timeslot, suitableSlot, afterSlot, beforeSlot);
+//                    }
+//                }
+//            }
+//                          
+//                }          
             }
             if (n%Tchange == 0) {
                 T = T * alpa;
@@ -159,7 +190,7 @@ public class SelfAdaptiveSimulatedAnnealing {
                 else if(NLbaru > j){
                     if (WNLsize > j) {
                         NL[j]=(int)WNL.get(j);
-                        System.out.println("lolos " + WNL.get(j));
+//                        System.out.println("lolos " + WNL.get(j));
                     }
 //                    else if (j % (WNLsize)==0) {
 //                        NL[j]=(int)WNL.get(0);
@@ -167,7 +198,7 @@ public class SelfAdaptiveSimulatedAnnealing {
                     else{
                         int ulangWNL = (int)Math.random()*WNLsize;
                         NL[j]=(int)WNL.get(ulangWNL);
-                      System.out.println("cek "+  NL[j]);
+//                      System.out.println("cek "+  NL[j]);
                     }
                 }
                 //25% dari NL diisi random
@@ -274,19 +305,22 @@ public class SelfAdaptiveSimulatedAnnealing {
 //        return newTS;
 //    }
     
-    void readInitialSol(int[][]mStudentEvent, int[][] suitableRoom, int timeslot, 
-            int[] initialTS, int[] initialRooms) {
+    void readInitialSol(int[][]mStudentEvent, int[][] suitableRoom, 
+            int[][] suitableSlot, int[][] suitableOrder,
+            int timeslot, int[] initialTS, int[] initialRooms) {
         currentTimeslot = initialTS.clone();
         currentRoom = initialRooms.clone();
         schStudent = readSol.studentAvail(mStudentEvent, timeslot, currentTimeslot);
         
-        hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, currentRoom, currentTimeslot);
+        hardConstraint = checkHC.hardConstraint(schStudent, suitableRoom, 
+                suitableSlot, suitableOrder, 
+                currentRoom, currentTimeslot);
         if (hardConstraint) {
             currentPenalty = checkPenalti.totalPenalti(schStudent);
         } else {
             currentPenalty = M;
         }
-        System.out.println("Initial Solution : " + currentPenalty);
+        System.out.println(/*"Initial Solution : "*/ + currentPenalty);
     }
     
     double[] rouletteWheele(int[] LHscore) {
@@ -312,6 +346,129 @@ public class SelfAdaptiveSimulatedAnnealing {
             }
         }
         return index;
+    }
+    
+    void firstSortOptimizationTS (int index, int currentSlot, int[][] conflictcourse, int[][] timeslotrooms, int[][] suitablerooms,
+            int timeslot, int[][] suitableslot, int[][] afterslot, int[][] beforeslot){
+        outerloop:  
+        for (int i =0; i < timeslot; i++){
+            if (searchTS(index, (currentSlot+1), conflictcourse, suitableslot, beforeslot, afterslot)) { //kalau searchTS benar maka
+                for (int k = 0; k < timeslotrooms[currentSlot].length; k++) {
+                    //cek contraint mengenai timeslot dan ruangan
+                    if (cekTimeslotRooms(index, timeslotrooms, suitablerooms, currentSlot, k)){
+                        //apabila lolos cek constrain, taruh timeslot dan ruangan
+                        placeTimeslotRooms(index, timeslotrooms, currentSlot, k);
+//                       System.out.println("Event "+ index +" ditaruh courseTimeslot " + (j+1));
+                        break outerloop;
+                    }
+                }
+            }
+            currentSlot++;
+        }
+    }
+    
+    void randomOptimizationTS (int index, int currentSlot, int[][] conflictcourse, int[][] timeslotrooms, int[][] suitablerooms,
+        int timeslot, int[][] suitableslot, int[][] afterslot, int[][] beforeslot, Random r, int low, int high){
+    outerloop:  
+        for (int i =0; i < 100; i++){
+            if (searchTS(index, (currentSlot+1), conflictcourse, suitableslot, beforeslot, afterslot)) { //kalau searchTS benar maka
+                for (int k = 0; k < timeslotrooms[currentSlot].length; k++) {
+                    //cek contraint mengenai timeslot dan ruangan
+                    if (cekTimeslotRooms(index, timeslotrooms, suitablerooms, currentSlot, k)){
+                        //apabila lolos cek constrain, taruh timeslot dan ruangan
+                        placeTimeslotRooms(index, timeslotrooms, currentSlot, k);
+    //                                System.out.println("Event "+ index +" ditaruh courseTimeslot " + (j+1));
+                        break outerloop;
+                    }
+                }
+            }
+            currentSlot= (r.nextInt(high-low) + low);
+        }
+    }
+        
+        boolean searchTS(int index, int currentSlot, int[][] conflictcourse, 
+            int[][] suitableslot, int[][] beforeslot, int[][] afterslot) {
+        for (int i = 0; i < conflictcourse[index].length; i++) {
+            int numCourse = conflictcourse[index][i];
+            int slotAccept = suitableslot[index][currentSlot-1];
+//                System.out.println("currentSlot "+ currentSlot);
+                if (slotAccept !=1) {
+//                    System.out.println("false");
+//                    System.out.println("index ke "+ index);
+////            System.out.println("numcoursenya adalah "+numCourse);
+//            System.out.println("currentslot ke "+currentSlot);
+////            System.out.println("courseTimeslot "+courseTimeslot[numCourse]);
+//            System.out.println("slotAccept "+slotAccept);
+                    return false;
+                }
+                else if (slotAccept !=0){
+                    
+                    if (newTimeslot[numCourse] == currentSlot || currentTimeslot [numCourse] == currentSlot) {
+//                        System.out.println("false");
+//                        System.out.println("index ke "+ index);
+////            System.out.println("numcoursenya adalah "+numCourse);
+//            System.out.println("currentslot ke "+currentSlot);
+////            System.out.println("courseTimeslot "+courseTimeslot[numCourse]);
+//            System.out.println("slotAccept "+slotAccept);
+                        return false;
+                    }
+                    if (afterslot[index].length>0){
+                        for (int j =0; j < afterslot[index].length; j++) {
+                            int afterCourse = afterslot[index][j];
+                            int cekCourseTS = newTimeslot[afterCourse];
+                            int cekAfterCourseTS = currentTimeslot[afterCourse];
+                            if (cekAfterCourseTS>0){
+                                if (currentSlot > cekAfterCourseTS) return false;
+                            }
+                            if (cekCourseTS>0){
+                                if (currentSlot > cekCourseTS) return false;
+                            }
+                        }
+                    }
+                    if (beforeslot[index].length>0){
+                        for (int j =0; j < beforeslot[index].length; j++) {
+                            int beforeCourse = beforeslot[index][j];
+                            int cekBeforeCourseTS = currentTimeslot[beforeCourse];
+                            int cekCourseTS = newTimeslot[beforeCourse];
+                            if (cekBeforeCourseTS>0){
+                                if (currentSlot < cekBeforeCourseTS) return false;
+                            }
+                            if (cekCourseTS>0){
+                                if (currentSlot < cekCourseTS) return false;
+                            }
+                        }
+                    }
+//                    else return true;
+                    
+                }
+                                    
+        }
+        return true;
+    }
+    
+    boolean cekTimeslotRooms(int index, int[][] timeslotrooms, int[][] suitablerooms, int j, int k){
+            int tr = timeslotrooms[j][k];
+            int sr = suitablerooms[index][k];
+            if (tr == 1 && sr == 0) {
+                return false;
+            }
+            if (tr == 0 && sr == 0) {
+                return false;
+            }
+            if (tr == 1 && sr == 1) {
+                return false;
+            }
+        return true;
+    }
+    
+    void placeTimeslotRooms(int index, int[][] timeslotrooms, int j, int k){
+        System.out.println("Event "+ index +" ditaruh courseTimeslot " + (j+1));
+        currentTimeslot[index] = j+1;
+        currentRoom[index] = k+1;
+        newTimeslot[index] = j+1;
+        newRoom[index] = k+1;
+//      System.out.println("taruh courseRoom  " +courseRoom[index]);
+        timeslotrooms[j][k]++;
     }
     
 }
